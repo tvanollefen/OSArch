@@ -1,0 +1,14 @@
+#ifndef FILEINFO
+#define FILEINFO
+
+
+typedef struct FileInfo
+{
+  char* fileName;
+  char* fileExtension;
+  char attributes;
+  int flc;
+  int fileSize;
+} FileInfo;
+
+#endif
