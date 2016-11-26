@@ -14,7 +14,8 @@ int BYTES_PER_SECTOR = 512;
 
 
 //DAVID JORDAN HELPED US UNDERSTAND THIS FUNCTION
-int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo)
+//returns location of file information, -1 if unimportant but found, or -2 if not found (so if it's >= 0 it's found successfully)
+int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster)
 {
 	int i = 0;
 	
@@ -40,7 +41,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
    		}
 		
 		read_sector(realCluster, data);
-		DirectoryOrFile *directory = (DirectoryOrFile*) data;
+		infoAtCluster[0] = (DirectoryOrFile*) data;
 
 		i = 0;
 		while (i < 16)
@@ -49,14 +50,14 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			//dont h8
 			if (directoryOrFile == 1)
 			{
-				strtok(directory[i].filename, " ");
-				strcpy(fileAndExtension, directory[i].filename);
+				strtok(infoAtCluster[0][i].filename, " ");
+				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
 				strcat(fileAndExtension, ".");
-				strcat(fileAndExtension, directory[i].extension);
+				strcat(fileAndExtension, infoAtCluster[0][i].extension);
 			}
 			else
 			{
-				strcpy(fileAndExtension, directory[i].filename);
+				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
 			}
 			
 			if (stringCompareTwoElectricBoogaloo(fileAndExtension, token) == 0)
@@ -71,30 +72,21 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 		}
 		if (i < 16)
 		{
-			if (validate(directoryOrFile, directory[i].extension))
+			if (validate(directoryOrFile, infoAtCluster[0][i].extension))
 			{
 				if (directoryOrFile == 1)
 				{
-					strtok(directory[i].filename, " ");
-					printf("Name              Type    File Size    FLC\n");
-					char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-					strcpy(fileAndExtension, directory[i].filename);
-					strcat(fileAndExtension, ".");
-					strcat(fileAndExtension, directory[i].extension);
-
-		      			printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, directory[i].fileSize, directory[i].firstLogicalCluster);
-					free(fileAndExtension);
-
-					FLC = directory[i].firstLogicalCluster;
-					FLC += 31;
+					//this right here prints out stuff for cat, fix later
+					FLC = infoAtCluster[0][i].firstLogicalCluster;
+					/*FLC += 31;
 					read_sector(FLC, data);
-					printf("%s\n", data);
+					printf("%s\n", data);*/
 
-					return 0; 
+					return i; 
 				}
 				else
 				{
-					FLC = directory[i].firstLogicalCluster;
+					FLC = infoAtCluster[0][i].firstLogicalCluster;
 				}
 			}
 			else
@@ -105,7 +97,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 					printf("What you're tryna do cannot be done with a directory, friend.\n");
 				else
 					printf("Bro, how did you even manage this?\n");
-				return 1;
+				return -1;
 			}
 		}
 		else
@@ -116,7 +108,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 				printf("File not found.\n");
 			else
 				printf("Bro, how did you even manage this?\n");
-			return 1;
+			return -2;
 		}
 		
 		token = strtok(NULL, "/");
@@ -127,7 +119,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 	*FLCTwoElectricBoogaloo = FLC;
 	free(data);
 	free(temp);	
-	return 0;
+	return i;
 }
 
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2)

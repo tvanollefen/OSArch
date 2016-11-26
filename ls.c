@@ -40,8 +40,10 @@ int main(int argc, char **argv)
       exit(1);
    }
 
+   int i;
    int FLC = 0;
    int realCluster;
+   DirectoryOrFile *infoAtCluster;
 
    unsigned char *data = malloc(BYTES_PER_SECTOR);
 
@@ -52,7 +54,19 @@ int main(int argc, char **argv)
    else if (argc == 2)
      {
 	//search also prints for now
-	search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster);
+	i = search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
+	printf ("We just searched for a file and the location is %d and if it's greater than 0 that means it's successful and hopefully we have info in infoAtCluster\n", i);
+	if (i >= 0)
+	{
+		strtok(infoAtCluster[i].filename, " ");
+		printf("Name              Type    File Size    FLC\n");
+		char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
+		strcpy(fileAndExtension, infoAtCluster[i].filename);
+		strcat(fileAndExtension, ".");
+		strcat(fileAndExtension, infoAtCluster[i].extension);
+		printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, infoAtCluster[i].fileSize, infoAtCluster[i].firstLogicalCluster);
+		free(fileAndExtension);
+	}
      }
    else
      {
@@ -72,7 +86,7 @@ int main(int argc, char **argv)
    if (argc < 2)
      {
 	read_sector(realCluster, data);
-	DirectoryOrFile *file = (DirectoryOrFile*) data;
+	infoAtCluster = (DirectoryOrFile*) data;
 
 	   int i;
 
@@ -85,38 +99,38 @@ int main(int argc, char **argv)
 	       
 	       //"If the first byte of the Filename field is 0x00, then this directory entry is free and all the remaining
 	       //directory entries in this directory are also free." - from the project spec
-	       if(file[i].filename[0] == 0x00)
+	       if(infoAtCluster[i].filename[0] == 0x00)
 		 {
 		   break;
 		 }
 
 	       //"If the first byte of the Filename field is 0xE5, then the directory entry is free (i.e., currently unused),
 	       //and hence there is no file or subdirectory associated with the directory entry." - from the project spec
-	       if(file[i].filename[0] == 0xE5 || file[i].filename[0] == 0xffffffe5) 
+	       if(infoAtCluster[i].filename[0] == 0xE5 || infoAtCluster[i].filename[0] == 0xffffffe5) 
 		 {
 		   continue;
 		}
 	
-		strtok(file[i].filename, " ");
+		strtok(infoAtCluster[i].filename, " ");
 
 	       //"If the Attributes byte is 0x0F, then this directory entry is part of a long file name and can be
 	       //ignored for purposes of this assignment."
-	       if(file[i].attributes != 0x0F)
+	       if(infoAtCluster[i].attributes != 0x0F)
 		 {
 		   //if it's a subdirectory
-		   if((file[i].attributes & 0x10) == 0x10)
+		   if((infoAtCluster[i].attributes & 0x10) == 0x10)
 		     {
-		       printf("%-15s    DIR            0  %5d\n", file[i].filename, file[i].firstLogicalCluster);
+		       printf("%-15s    DIR            0  %5d\n", infoAtCluster[i].filename, infoAtCluster[i].firstLogicalCluster);
 		     }
 		   //otherwise it must be a non-long file name and we can print everything
 		   else
 		     {
 			char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-			strcpy(fileAndExtension, file[i].filename);
+			strcpy(fileAndExtension, infoAtCluster[i].filename);
 			strcat(fileAndExtension, ".");
-			strcat(fileAndExtension, file[i].extension);
+			strcat(fileAndExtension, infoAtCluster[i].extension);
 
-		       printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, file[i].fileSize, file[i].firstLogicalCluster);
+		       printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, infoAtCluster[i].fileSize, infoAtCluster[i].firstLogicalCluster);
 			free(fileAndExtension);
 		     }
 		 }

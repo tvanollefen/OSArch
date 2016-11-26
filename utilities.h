@@ -62,7 +62,7 @@ typedef struct DirectoryOrFile
 } DirectoryOrFile;
 #pragma pack()
 
-int search(short FLC, const char* target, int directoryOrFile, short *FLCTwoElectricBoogaloo);
+int search(short FLC, const char* target, int directoryOrFile, short *FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster);
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2);
 //void printTestInfo(DirectoryOrFile *directory, int i);
 

@@ -20,7 +20,7 @@ Referenced: https://brennan.io/2015/01/16/write-a-shell-in-c/
 
 #define MAX_LENGTH 1024
 size_t MAX_INPUT_LENGTH = 256;
-char* FLOPPY_IMAGE_NAME = "floppy1";
+char* FLOPPY_IMAGE_NAME = "floppy2";
 FILE* FILE_SYSTEM_ID;
 
 

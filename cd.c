@@ -39,20 +39,22 @@ int main(int argc, char **argv)
       exit(1);
     }
 
+  DirectoryOrFile *unused;
+
   if (argc == 2)
     {
 	
       //absolute path first
       if (argv[1][0] == '/')
 	{
-		if (search(0, argv[1], 0, &sharedMemory->firstCluster) == 0)
+		if (search(0, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
 		{
 	 		strcpy(sharedMemory->curDir, argv[1]);
 		}
 	}
       //if you're not in the home directory, add a slash before concatenating the strings
 	//also make sure we don't search from the beginning because 
-	else if (search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster) == 0)
+	else if (search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
 	{
 		if (strcmp(sharedMemory->curDir, sharedMemory->homeDir))
 		{
