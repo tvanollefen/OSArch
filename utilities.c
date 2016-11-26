@@ -14,7 +14,8 @@ int BYTES_PER_SECTOR = 512;
 
 
 //DAVID JORDAN HELPED US UNDERSTAND THIS FUNCTION
-//returns location of file information, -1 if unimportant but found, or -2 if not found (so if it's >= 0 it's found successfully)
+//returns location of single file information, -1 if unimportant but found, or -2 if not found (so if it's >= 0 it's found successfully)
+//maybe returns FLC if looking for directory
 int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster)
 {
 	int i = 0;
@@ -27,6 +28,40 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 	strcpy(temp, target);
 
 	char *token;
+
+	int j;
+	int slashCount = 0;
+	
+	//check to see how many slashes in the token
+	for (j = 0; j < strlen(target)+1; j++)
+	{
+		if (temp[j] == '/')
+		{
+			slashCount++;
+		}
+	}
+
+	
+	
+	//if there's only one slash at the beginning and then it finds a dot, that means we're looking for a file in the root directory
+	//so slash count should be 0
+	if (slashCount == 1 && target[0] == '/')
+	{
+		for (j = 0; j < strlen(target)+1; j++)
+		{
+			if (temp[j] == '.')
+			{
+
+				slashCount = 0;
+				break;
+			}
+		}
+	}
+
+	if (slashCount > 1)
+		slashCount--;
+
+
       	token = strtok(temp, "/");
 
 	while (token != NULL)
@@ -47,10 +82,14 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 		while (i < 16)
 		{
 			char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-			//dont h8
+			//dont h8 but this works
 			if (directoryOrFile == 1)
 			{
-				strtok(infoAtCluster[0][i].filename, " ");
+				//if we know it's a file
+				if (slashCount <= 0)
+					strtok(infoAtCluster[0][i].filename, " ");
+
+				//else only this
 				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
 				strcat(fileAndExtension, ".");
 				strcat(fileAndExtension, infoAtCluster[0][i].extension);
@@ -67,7 +106,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			else
 			{
 				i++;
-			}
+			}	
 			free(fileAndExtension);
 		}
 		if (i < 16)
@@ -77,6 +116,8 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 				if (directoryOrFile == 1)
 				{
 					FLC = infoAtCluster[0][i].firstLogicalCluster;
+					
+					//i think this is why you can't search for files in different directories
 					return i; 
 				}
 				else
@@ -87,12 +128,15 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			else
 			{
 				if (directoryOrFile == 0)
-					printf("You can't cd to a file, friend.\n");
+					printf("You can't do that with a file, friend.\n");
 				else if (directoryOrFile == 1)
-					printf("What you're tryna do cannot be done with a directory, friend.\n");
+					{
+						//printf("What you're tryna do cannot be done with a directory, friend.\nBut we'll try it for now\n");
+						FLC = infoAtCluster[0][i].firstLogicalCluster;
+					}
 				else
 					printf("Bro, how did you even manage this?\n");
-				return -1;
+				//return -1;
 			}
 		}
 		else
@@ -105,10 +149,11 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 				printf("Bro, how did you even manage this?\n");
 			return -2;
 		}
-		
+		slashCount--;
 		token = strtok(NULL, "/");
 	}
-
+	//if (directoryOrFile == 1)
+	//	return i;
 	//end goal should be found by this point
 	
 	*FLCTwoElectricBoogaloo = FLC;
@@ -120,7 +165,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2)
 {	
 	int i;
-	for(i = 0; i < 8; i++)
+	for(i = 0; i < 12; i++)
 	{
 		
 		if (str1[i] == ' ' && str2[i] == '\0')

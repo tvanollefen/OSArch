@@ -53,8 +53,16 @@ int main(int argc, char **argv)
      }
    else if (argc == 2)
      {
-	//search also prints for now
-	i = search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
+	//if the argument is a directory print out whatever is in that directory
+	//search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster, &infoAtCluster);
+	//if i is greater than 0 print stuff
+	//prob put the printing stuff in a function so rewrite isn't necessary
+	
+	//else find the file
+	if (argv[1][0] == '/')
+		i = search(0, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
+	else
+		i = search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
 	if (i >= 0)
 	{
 		strtok(infoAtCluster[i].filename, " ");
@@ -134,6 +142,6 @@ int main(int argc, char **argv)
 		 }
 	     }
      }
-	//free(data);
+	free(data);
    return 0;
 }
