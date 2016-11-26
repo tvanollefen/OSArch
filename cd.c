@@ -76,6 +76,7 @@ int main(int argc, char **argv)
   else
     {
       strcpy(sharedMemory->curDir, sharedMemory->homeDir);
+      sharedMemory->firstCluster = 0;
     } 
 
   return 0;

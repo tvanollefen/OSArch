@@ -76,12 +76,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			{
 				if (directoryOrFile == 1)
 				{
-					//this right here prints out stuff for cat, fix later
 					FLC = infoAtCluster[0][i].firstLogicalCluster;
-					/*FLC += 31;
-					read_sector(FLC, data);
-					printf("%s\n", data);*/
-
 					return i; 
 				}
 				else

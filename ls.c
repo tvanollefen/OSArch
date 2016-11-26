@@ -81,7 +81,6 @@ int main(int argc, char **argv)
       		realCluster = 31 + FLC;
    	}
 
-   //for now
    if (argc < 2)
      {
 	read_sector(realCluster, data);
@@ -135,6 +134,6 @@ int main(int argc, char **argv)
 		 }
 	     }
      }
-	free(data);
+	//free(data);
    return 0;
 }
