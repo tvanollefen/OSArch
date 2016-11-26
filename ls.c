@@ -55,7 +55,6 @@ int main(int argc, char **argv)
      {
 	//search also prints for now
 	i = search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
-	printf ("We just searched for a file and the location is %d and if it's greater than 0 that means it's successful and hopefully we have info in infoAtCluster\n", i);
 	if (i >= 0)
 	{
 		strtok(infoAtCluster[i].filename, " ");
