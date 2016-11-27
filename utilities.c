@@ -15,7 +15,8 @@ int BYTES_PER_SECTOR = 512;
 
 //DAVID JORDAN HELPED US UNDERSTAND THIS FUNCTION
 //returns location of single file information, -1 if unimportant but found, or -2 if not found (so if it's >= 0 it's found successfully)
-//maybe returns FLC if looking for directory
+//returns FLC if looking for directory
+//oh boy what a mess
 int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster)
 {
 	int i = 0;
@@ -58,6 +59,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 		}
 	}
 
+	//lol this just works don't mind it
 	if (slashCount > 1)
 		slashCount--;
 
@@ -117,7 +119,6 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 				{
 					FLC = infoAtCluster[0][i].firstLogicalCluster;
 					
-					//i think this is why you can't search for files in different directories
 					return i; 
 				}
 				else
@@ -159,7 +160,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 	*FLCTwoElectricBoogaloo = FLC;
 	free(data);
 	free(temp);	
-	return i;
+	return FLC;
 }
 
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2)
