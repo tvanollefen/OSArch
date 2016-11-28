@@ -32,7 +32,9 @@ char* builtin_name[] = {
   "cd",
   "pwd",
   "ls",
-  "cat"
+  "cat",
+  "rmdir",
+  "rm"
 };
 
 int builtinCount()
@@ -146,12 +148,14 @@ int main(void)
 	}
 
       //handle the other functions in the directory
-      else if(strcmp(argv[0], "pfe") == 0 ||
-	      strcmp(argv[0], "pbs") == 0 ||
-	      strcmp(argv[0], "cd" ) == 0 ||
-	      strcmp(argv[0], "pwd") == 0 ||
-	      strcmp(argv[0], "ls" ) == 0 ||
-	      strcmp(argv[0], "cat") == 0)
+      else if(strcmp(argv[0], "pfe")   == 0 ||
+	      strcmp(argv[0], "pbs")   == 0 ||
+	      strcmp(argv[0], "cd" )   == 0 ||
+	      strcmp(argv[0], "pwd")   == 0 ||
+	      strcmp(argv[0], "ls" )   == 0 ||
+	      strcmp(argv[0], "cat")   == 0 ||
+	      strcmp(argv[0], "rmdir") == 0)//||
+	     // strcmp(argv[0], "rm") == 0)
 	{
 	  forkAndExec(argc, argv);
 	}
