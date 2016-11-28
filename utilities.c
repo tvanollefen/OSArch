@@ -94,7 +94,18 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 				//else only this
 				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
 				strcat(fileAndExtension, ".");
-				strcat(fileAndExtension, infoAtCluster[0][i].extension);
+
+
+				/*if (slashCount <= 0 && token[strlen(token) - 1] == '.')
+				{
+					//sorry that this is bad logic, but do nothing if this happens
+					
+				}
+				else*/				
+					strcat(fileAndExtension, infoAtCluster[0][i].extension);
+
+				printf("We have %s\n", fileAndExtension);
+				printf("We're looking for %s\n", token);
 			}
 			else
 			{
@@ -132,13 +143,11 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 					printf("You can't do that with a file, friend.\n");
 				else if (directoryOrFile == 1)
 					{
-						//printf("What you're tryna do cannot be done with a directory, friend.\nBut we'll try it for now\n");
 						FLC = infoAtCluster[0][i].firstLogicalCluster;
 					}
 				else
 					printf("Bro, how did you even manage this?\n");
-				//return -1;
-			}
+}
 		}
 		else
 		{
@@ -153,9 +162,6 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 		slashCount--;
 		token = strtok(NULL, "/");
 	}
-	//if (directoryOrFile == 1)
-	//	return i;
-	//end goal should be found by this point
 	
 	*FLCTwoElectricBoogaloo = FLC;
 	free(data);

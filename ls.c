@@ -35,6 +35,7 @@ void print(DirectoryOrFile *infoAtCluster)
 	       //directory entries in this directory are also free." - from the project spec
 	       if(infoAtCluster[i].filename[0] == 0x00)
 		 {
+			printf("This is an entirely free directory\n");
 		   break;
 		 }
 
@@ -42,6 +43,7 @@ void print(DirectoryOrFile *infoAtCluster)
 	       //and hence there is no file or subdirectory associated with the directory entry." - from the project spec
 	       if(infoAtCluster[i].filename[0] == 0xE5 || infoAtCluster[i].filename[0] == 0xffffffe5) 
 		 {
+			printf("This directory is unused\n");
 		   continue;
 		}
 	

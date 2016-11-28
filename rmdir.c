@@ -30,6 +30,7 @@ int main(int argc, char **argv)
 
    int i;
    int FLC = 0;
+   int deletable = 0;
    int realCluster;
    short oldCluster = sharedMemory->firstCluster;
    DirectoryOrFile *infoAtCluster;
@@ -58,33 +59,48 @@ int main(int argc, char **argv)
 	}
 	
 	//i is either the location of the file in the cluster or the FLC of the directory. yeah, weird, I know.
-	/*if (argv[1][0] == '/')
-		i = search(0, argv[1], lookingForFile, &sharedMemory->firstCluster, &infoAtCluster);
+	if (argv[1][0] == '/')
+		i = search(0, argv[1], 0, &sharedMemory->firstCluster, &infoAtCluster);
 	else
-		i = search(sharedMemory->firstCluster, argv[1], lookingForFile, &sharedMemory->firstCluster, &infoAtCluster);
+		i = search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster, &infoAtCluster);
 
-	if (i >= 0 && lookingForFile == 1)
-	{
-		strtok(infoAtCluster[i].filename, " ");
-		printf("Name              Type    File Size    FLC\n");
-		char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-		strcpy(fileAndExtension, infoAtCluster[i].filename);
-		strcat(fileAndExtension, ".");
-		strcat(fileAndExtension, infoAtCluster[i].extension);
-		printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, infoAtCluster[i].fileSize, infoAtCluster[i].firstLogicalCluster);
-		free(fileAndExtension);
-	}
-	else if (i >= 0 && lookingForFile == 0)
+
+	if (i >= 0)
 	{
 		if (i == 0)
 			realCluster = 19;
 		else
 			realCluster = 31 + i;
+
 		read_sector(realCluster, data);
 		infoAtCluster = (DirectoryOrFile*) data;
-		print(infoAtCluster);
+
+		int j;
+		for (j = 0; j < 16; j++)
+		{
+			//if there's something inside the directory it can't be deleted
+			if (infoAtCluster[i].filename[0] != 0x00 &&
+				infoAtCluster[i].filename[0] != 0xE5 &&
+				infoAtCluster[i].filename[0] != 0xffffffe5 &&
+				infoAtCluster[i].filename[0] != '.')
+			{
+				deletable = 1;
+				break;
+			}
+		}
+		if (deletable == 0)
+		{
+			//set filename to 0x00?
+			//update fat entry?
+		}
+		else
+		{
+			printf("The directory is not empty so we can't delete it.\n");
+			return 1;
+		}
+		//print(infoAtCluster);
 		sharedMemory->firstCluster = oldCluster;
-	}*/
+	}
      }
 
 	free(data);
