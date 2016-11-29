@@ -33,9 +33,12 @@ int main(int argc, char **argv)
    int deletable = 0;
    int realCluster;
    short oldCluster = sharedMemory->firstCluster;
+   short newOldCluster = sharedMemory->firstCluster;
    DirectoryOrFile *infoAtCluster;
+   DirectoryOrFile *infoAtOldCluster;
 
    unsigned char *data = malloc(BYTES_PER_SECTOR);
+   unsigned char *oldData = malloc(BYTES_PER_SECTOR);
 
    if (argc != 2)
      {
@@ -90,12 +93,65 @@ int main(int argc, char **argv)
 		}
 		if (deletable == 0)
 		{
-			//set filename to 0x00?
-			//update fat entry?
+			int q;
+			
+			q = search(sharedMemory->firstCluster, "..", 0, &sharedMemory->firstCluster, &infoAtCluster);
+			printf("q after searching is %d\n", q);
+
+			int newCluster;
+			if (q == 0)
+				newCluster = 19;
+			else
+				newCluster = 31 + q;
+			read_sector(newCluster, oldData);
+			infoAtOldCluster = (DirectoryOrFile*) oldData;
+
+			printf("our argument has changed maybe i hope please and it is now %s\n", argv[1]);
+			//strcat(argv[1], "\0");
+
+			for (q = 0; q < 16; q++)
+			{
+				printf("We're gonna compare %s and %s\n", infoAtOldCluster[q].filename, argv[1]);
+				char* fixedName = malloc(8);
+				int g;
+				for (g = 0; g < 8; g++)
+				{
+					if(infoAtOldCluster[q].filename[g] != ' ')
+						fixedName[g] = infoAtOldCluster[q].filename[g];
+					else
+						break;
+				}
+				printf("fixedName is %s, and argv is %s,\n", fixedName, argv[1]);				
+
+				if (strcmp(fixedName, argv[1]) == 0)
+					break;
+			}
+
+			printf ("q is %d\n", q);
+
+			char* deletionBuffer = malloc(BYTES_PER_SECTOR);
+			char* deleteFromAboveBuffer = malloc(BYTES_PER_SECTOR);
+			int k;
+			for (k = 0; k <= BYTES_PER_SECTOR; k++)
+			{
+				if (k == 0)
+					deletionBuffer[k] = 0xE5;
+				else
+					deletionBuffer[k] = 0;
+			}
+
+			read_sector(newCluster, deleteFromAboveBuffer);
+			deleteFromAboveBuffer[q * 32] = 0xE5;
+
+			
+			
+			write_sector(realCluster, deletionBuffer);
+			write_sector(newCluster, deleteFromAboveBuffer);
 		}
 		else
 		{
 			printf("The directory is not empty so we can't delete it.\n");
+			sharedMemory->firstCluster = oldCluster;
 			return 1;
 		}
 		//print(infoAtCluster);
