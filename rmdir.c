@@ -33,7 +33,6 @@ int main(int argc, char **argv)
    int deletable = 0;
    int realCluster;
    short oldCluster = sharedMemory->firstCluster;
-   short newOldCluster = sharedMemory->firstCluster;
    DirectoryOrFile *infoAtCluster;
    DirectoryOrFile *infoAtOldCluster;
 
@@ -96,7 +95,7 @@ int main(int argc, char **argv)
 			int q;
 			
 			q = search(sharedMemory->firstCluster, "..", 0, &sharedMemory->firstCluster, &infoAtCluster);
-			printf("q after searching is %d\n", q);
+			//printf("q after searching is %d\n", q);
 
 			int newCluster;
 			if (q == 0)
@@ -106,12 +105,12 @@ int main(int argc, char **argv)
 			read_sector(newCluster, oldData);
 			infoAtOldCluster = (DirectoryOrFile*) oldData;
 
-			printf("our argument has changed maybe i hope please and it is now %s\n", argv[1]);
+			//printf("our argument has changed maybe i hope please and it is now %s\n", argv[1]);
 			//strcat(argv[1], "\0");
 
 			for (q = 0; q < 16; q++)
 			{
-				printf("We're gonna compare %s and %s\n", infoAtOldCluster[q].filename, argv[1]);
+				//printf("We're gonna compare %s and %s\n", infoAtOldCluster[q].filename, argv[1]);
 				char* fixedName = malloc(8);
 				int g;
 				for (g = 0; g < 8; g++)
@@ -121,13 +120,13 @@ int main(int argc, char **argv)
 					else
 						break;
 				}
-				printf("fixedName is %s, and argv is %s,\n", fixedName, argv[1]);				
+				//printf("fixedName is %s, and argv is %s,\n", fixedName, argv[1]);				
 
 				if (strcmp(fixedName, argv[1]) == 0)
 					break;
 			}
 
-			printf ("q is %d\n", q);
+			//printf ("q is %d\n", q);
 
 			char* deletionBuffer = malloc(BYTES_PER_SECTOR);
 			char* deleteFromAboveBuffer = malloc(BYTES_PER_SECTOR);
@@ -141,12 +140,14 @@ int main(int argc, char **argv)
 			}
 
 			read_sector(newCluster, deleteFromAboveBuffer);
+			//32 bytes per file/directory info
 			deleteFromAboveBuffer[q * 32] = 0xE5;
 
 			
 			
 			write_sector(realCluster, deletionBuffer);
 			write_sector(newCluster, deleteFromAboveBuffer);
+			printf("Directory successfully deleted!\n");
 		}
 		else
 		{

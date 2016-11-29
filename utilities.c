@@ -21,7 +21,7 @@ int BYTES_PER_SECTOR = 512;
 //oh boy what a mess
 int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster)
 {
-	printf ("directoryOrFile at the beginning is %d\n", directoryOrFile);
+	//printf ("directoryOrFile at the beginning is %d\n", directoryOrFile);
 	int i = 0;
 	
 	char* data = malloc(BYTES_PER_SECTOR);
@@ -107,8 +107,8 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 							
 				strcat(fileAndExtension, infoAtCluster[0][i].extension);
 
-				printf("We have %s\n", fileAndExtension);
-				printf("We're looking for %s\n", token);
+				//printf("We have %s\n", fileAndExtension);
+				//printf("We're looking for %s\n", token);
 			}
 			else
 			{
@@ -130,28 +130,17 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			if (validate(directoryOrFile, infoAtCluster[0][i].extension) == 1)
 			{
 
-				int poop = validate(directoryOrFile, infoAtCluster[0][i].extension);
-				printf ("Poop is %d\ndirectoryOrFile is %d\n", poop, directoryOrFile);
+				//int poop = validate(directoryOrFile, infoAtCluster[0][i].extension);
+				//printf ("Poop is %d\ndirectoryOrFile is %d\n", poop, directoryOrFile);
 				if (directoryOrFile == 1)
 				{
 					FLC = infoAtCluster[0][i].firstLogicalCluster;
 					
 					return i; 
 				}
-				else if (directoryOrFile == 3)
-				{
-					printf("We should get here\n");
-				}
 				else
 				{
 					FLC = infoAtCluster[0][i].firstLogicalCluster;
-					
-					//if rmdir calls this, it will return the location of the target directory in the parent directory
-					if (directoryOrFile == 3 && slashCount <= 0)
-					{
-						printf("Do we get here?\n");
-						return i;
-					}
 
 				}
 			}
@@ -164,7 +153,6 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 						FLC = infoAtCluster[0][i].firstLogicalCluster;
 					}
 				else
-					//return i;
 					printf("Bro, how did you even manage this? LOL\n");
 			}
 		}
@@ -175,8 +163,7 @@ int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElec
 			else if (directoryOrFile == 1)
 				printf("File not found.\n");
 			else
-				return i;
-				//printf("Bro, how did you even manage this? LMAO\n");
+				printf("Bro, how did you even manage this? LMAO\n");
 			return -2;
 		}
 		slashCount--;
@@ -217,14 +204,11 @@ int stringCompareTwoElectricBoogaloo(char *str1, char *str2)
 
 int validate(int directoryOrFile, char *extension)
 {
-	if (directoryOrFile == 0 || directoryOrFile == 3)
+	if (directoryOrFile == 0)
 	{
 		//if extension[0] is a space that means it's a directory
 		//return 1 if it's a directory if we're looking for a directory
 		//return 0 if it's a file if we're looking for a directory
-		printf ("What you typed in has indeed been found\n");
-		int pene = (extension[0] == ' ');
-		printf ("pene is %d\n", pene);
 		return (extension[0] == ' ');
 	}
 	else if (directoryOrFile == 1)

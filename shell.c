@@ -154,8 +154,8 @@ int main(void)
 	      strcmp(argv[0], "pwd")   == 0 ||
 	      strcmp(argv[0], "ls" )   == 0 ||
 	      strcmp(argv[0], "cat")   == 0 ||
-	      strcmp(argv[0], "rmdir") == 0)//||
-	     // strcmp(argv[0], "rm") == 0)
+	      strcmp(argv[0], "rmdir") == 0 ||
+	      strcmp(argv[0], "rm")    == 0)
 	{
 	  forkAndExec(argc, argv);
 	}
