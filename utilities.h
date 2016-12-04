@@ -16,6 +16,9 @@ I certify that this assignment is entirely our own work unless cited otherwise.
 #include <unistd.h>
 #include <string.h>
 
+#define LABEL_LENGTH  11
+#define FILESYSTEM_LENGTH 8
+
 #define NUM_FAT_SECTORS 9
 #define FAT_TABLE_SIZE BYTES_PER_SECTOR * NUM_FAT_SECTORS
 //int BYTES_PER_SECTOR = 512;
@@ -42,6 +45,22 @@ I certify that this assignment is entirely our own work unless cited otherwise.
 extern FILE* FILE_SYSTEM_ID;
 extern int BYTES_PER_SECTOR;
 
+typedef struct DataAttribs
+{
+   int mBytesPerSector;
+   int mSectorsPerCluster;
+   int mNumFATs;
+   int mNumReservedSectors;
+   int mNumRootEntries;
+   int mTotalSectorCount;
+   int mSectorsPerFAT;
+   int mSectorsPerTrack;
+   int mNumHeads;
+   int mBootSignature;
+   int mVolumeID;
+   char mVolumeLabel[LABEL_LENGTH];
+   char mFileSystemType[FILESYSTEM_LENGTH];
+} DataAttribs;
 
 //DAVID JORDAN IS OUR HERO HE HELPED US UNDERSTAND
 #pragma pack(1)
