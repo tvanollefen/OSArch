@@ -30,7 +30,7 @@ void print(char* fatTable, int x, int y)
    }
 }
 
-char* readFAT12Table()
+/*char* readFAT12Table()
 {
    int i;
    char* fatTable = malloc(FAT_TABLE_SIZE);
@@ -41,7 +41,7 @@ char* readFAT12Table()
    }
 
    return fatTable;
-}
+}*/
 
 int checkRange(int x, int y)
 {
@@ -83,7 +83,13 @@ int main (int argc, char* argv[])
       return 1;
    }
 
-   FILE_SYSTEM_ID = fopen("floppy1", "r+");
+   //https://beej.us/guide/bgipc/output/html/multipage/shm.html
+   //Alex Apmann is God
+   int shmId = shmget((key_t) 8888888, sizeof(char), 0666 | IPC_CREAT);
+ 
+   SharedMemory *sharedMemory = (SharedMemory *)shmat(shmId, (void *) 0, 0);
+ 
+   FILE_SYSTEM_ID = fopen(sharedMemory->floppyImgName, "r+");
 
    if (FILE_SYSTEM_ID == NULL)
    {

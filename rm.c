@@ -29,7 +29,8 @@ int main(int argc, char **argv)
    }
 
    int i;
-   int FLC = 0;
+   short FLC = -1;
+   short oldFLC = -1;
    int deletable = 0;
    int realCluster;
    short oldCluster = sharedMemory->firstCluster;
@@ -54,21 +55,31 @@ int main(int argc, char **argv)
 
 	if (i >= 0)
 	{
-		//infoAtCluster[i].filename must become 0xE5
-		//
-		if (sharedMemory->firstCluster == 0)
-		{
-			realCluster = 19;
-		}
+		short clusterToReadFileFrom = sharedMemory->firstCluster;
+		if (clusterToReadFileFrom == 0)
+			clusterToReadFileFrom = 19;
 		else
-		{
-			realCluster = 31 + sharedMemory->firstCluster;
-		}
-			read_sector(realCluster, deleteBuffer);
-			deleteBuffer[i * 32] = 0xE5;
+			clusterToReadFileFrom += 31;
 
-			write_sector(realCluster, deleteBuffer);
-			printf("File successfully deleted!\n");
+		read_sector(clusterToReadFileFrom, deleteBuffer);
+		deleteBuffer[i * 32] = 0xE5;
+		write_sector(clusterToReadFileFrom, deleteBuffer);
+
+
+		//FLC will never be 0 because the file can't actually be the root directory
+		FLC = infoAtCluster[i].firstLogicalCluster;
+		char* fatEntryBuffer = readFAT12Table();
+
+		while (FLC != 0 && FLC != 4095) //FFF -> decimal = 4095
+		{
+		        oldFLC = get_fat_entry(FLC,fatEntryBuffer);
+		        set_fat_entry(FLC, 0, fatEntryBuffer);
+			FLC = oldFLC;
+		}
+		
+		writeFAT12Table(fatEntryBuffer);
+		
+		printf("File successfully deleted!\n");
 	}
 	else
 	{

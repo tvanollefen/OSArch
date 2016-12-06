@@ -14,6 +14,28 @@ I certify that this assignment is entirely our own work unless cited otherwise.
 
 int BYTES_PER_SECTOR = 512;
 
+char* readFAT12Table()
+{
+   int i;
+   char* buffer = (char*)malloc(FAT_TABLE_SIZE);
+
+   for (i = 0; i < NUM_FAT_SECTORS; i++)
+   {
+      read_sector(i + 1, &buffer[i * BYTES_PER_SECTOR]);
+   }
+
+   return buffer;
+}
+
+int writeFAT12Table(char* buffer)
+{
+   int i;
+   for (i = 0; i < NUM_FAT_SECTORS; i++)
+   {
+      write_sector(i + 1, &buffer[i * BYTES_PER_SECTOR]);
+   }
+}
+
 
 //DAVID JORDAN HELPED US UNDERSTAND READING THE DATA INTO THE STRUCT
 //returns location of single file information, -1 if unimportant but found, or -2 if not found (so if it's >= 0 it's found successfully)

@@ -33,7 +33,7 @@ int main(int argc, char **argv)
    int realCluster;
    DirectoryOrFile *infoAtCluster;
 
-   unsigned char *data = malloc(BYTES_PER_SECTOR);
+   
 
 if (argc != 2)
      {
@@ -44,14 +44,29 @@ if (argc != 2)
 	i = search(sharedMemory->firstCluster, argv[1], 1, &sharedMemory->firstCluster, &infoAtCluster);
 	if (i >= 0)
 	{
+		int numSecs = 0;
+   		char* fatBuffer = readFAT12Table();
+   		int currentFlc = sharedMemory->firstCluster;
+   		while(/*currentFlc != 0 && */currentFlc != 4095)
+   		{
+     			 numSecs++;
+      			currentFlc = get_fat_entry(currentFlc,fatBuffer);
+  		}
 		FLC = infoAtCluster[i].firstLogicalCluster;
 		FLC += 31;
-		read_sector(FLC, data);
+		unsigned char *data = malloc(BYTES_PER_SECTOR * numSecs);
+
+		int i = 0;
+  		 for(i = 0; i < numSecs; i++)
+   		{
+      			read_sector(FLC, data +(BYTES_PER_SECTOR*i));
+      			currentFlc = get_fat_entry(currentFlc, fatBuffer);
+   		}
 		printf("%s\n", data);
 	}
      }
 
 
-	free(data);
+	//free(data);
    return 0;
 }
