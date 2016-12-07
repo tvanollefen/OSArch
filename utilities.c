@@ -270,6 +270,8 @@ void readBootSector(DataAttribs* data)
 
    data->mBytesPerSector = mostSignificantBits | leastSignificantBits;
    data->mSectorsPerCluster = buffer[13];
+   
+   BYTES_PER_SECTOR = data->mBytesPerSector;
 
    mostSignificantBits  = ( ( (int) buffer[15] ) << 8 ) & 0x0000ff00;
    leastSignificantBits =   ( (int) buffer[14] )        & 0x000000ff;
@@ -395,7 +397,7 @@ int read_sector(int sector_number, unsigned char* buffer)
 int write_sector(int sector_number, unsigned char* buffer) 
 {
    int bytes_written;
-
+   
    if (fseek(FILE_SYSTEM_ID,
        (long) sector_number * (long) BYTES_PER_SECTOR, SEEK_SET) != 0) 
    {

@@ -15,9 +15,9 @@ I certify that this assignment is entirely our own work unless cited otherwise.
 #include "utilities.h"
 #include "sharedMemory.h"
 
-#define BYTES_TO_READ_IN_BOOT_SECTOR 61
-#define NUM_FAT_SECTORS 9
-#define FAT_TABLE_SIZE BYTES_PER_SECTOR * NUM_FAT_SECTORS
+//#define BYTES_TO_READ_IN_BOOT_SECTOR 61
+//#define NUM_FAT_SECTORS 9
+//#define FAT_TABLE_SIZE BYTES_PER_SECTOR * NUM_FAT_SECTORS
 
 DataAttribs data;
 DirectoryOrFile newFile;
@@ -68,8 +68,8 @@ int main(int argc, char **argv)
      {
         //readfat12
 
-        unsigned char* fat = readFAT12Table();
         readBootSector(&data);
+        unsigned char* fat = readFAT12Table();
 	//get_fat_entry(2, fat);
 	//set_fat_entry(9, 0xFFF, fat);
         int j;
@@ -95,12 +95,9 @@ int main(int argc, char **argv)
 	//what a horrible night to have a curse
 
 	//temporary break
-	printf("%d\n",writeFAT12Table(fat));
+	writeFAT12Table(fat);
 	free(fat);
-	fat = readFAT12Table();
-
-	int b;
-	//for (b = 2; b < 66
+	fclose(FILE_SYSTEM_ID);
 	return 0;
 
        /* if(j == totalSectors)

@@ -98,13 +98,13 @@ int main(void)
 
   SharedMemory *sharedMemory = (SharedMemory *)shmat(shmId, (void *) 0, 0);
 
-  FILE_SYSTEM_ID = fopen(FLOPPY_IMAGE_NAME, "r+");
+  /*FILE_SYSTEM_ID = fopen(FLOPPY_IMAGE_NAME, "r+");
 
    if (FILE_SYSTEM_ID == NULL)
    {
       printf("Could not open the floppy drive or image.\n");
       exit(1);
-   }
+   }*/
 
    strcpy(sharedMemory->curDir, "/"); //set starting directory to '/'
    strcpy(sharedMemory->homeDir, "/"); //set home directory to '/'
