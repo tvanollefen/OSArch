@@ -79,28 +79,23 @@ int main(int argc, char **argv)
         //find free cluster
         int totalSectors = data.mTotalSectorCount - 31;
 	
-        for(j = 2; j < 20; j++)
+
+	//bigBossGuy was for debug but we decided to keep it
+        for(j = 2; j < totalSectors; j++)
         {
            int bigBossGuy = get_fat_entry(j, fat);
-	    printf("Big boss is %d  %x  %d\n", j, bigBossGuy, bigBossGuy);
+	    //printf("Big boss is %d  %x  %d\n", j, bigBossGuy, bigBossGuy);
             if(bigBossGuy == 0)
             {
-		printf ("Entry is %d\nj is %d\n", bigBossGuy, j);
+		//printf ("Entry is %d\nj is %d\n", bigBossGuy, j);
                 set_fat_entry(j, 0xFFF, fat);
-		printf ("Entry %d should now be %d\n",j, 4095);
+		//printf ("Entry %d should now be %d\n",j, 4095);
 		break;
             }
         }
-	
-	//what a horrible night to have a curse
 
-	//temporary break
-	writeFAT12Table(fat);
-	free(fat);
-	fclose(FILE_SYSTEM_ID);
-	return 0;
 
-       /* if(j == totalSectors)
+        if(j == totalSectors)
         {
             printf("There is no available space to write!");
             return 1;
@@ -145,13 +140,41 @@ int main(int argc, char **argv)
         for (k = 0; k < 16; k++)
         {
             //check the cluster if usable
-            if(infoAtCluster[k].filename[0] == 0x00 || infoAtCluster[k].filename[0] == 0xE5)
+            if(infoAtCluster[k].filename[0] == 0x00 || infoAtCluster[k].filename[0] == 0xE5 || infoAtCluster[k].filename[0] == 0xffffffe5)
             {
-                strcpy(infoAtCluster[k].filename, filename);
-                strcpy(infoAtCluster[k].extension, extension);
-                infoAtCluster[k].firstLogicalCluster = j;
-                infoAtCluster[k].fileSize = 0;
-                break;
+		if (infoAtCluster[k].filename[0] == 0x00)
+		{
+		        strcpy(infoAtCluster[k].filename, filename);
+		        strcpy(infoAtCluster[k].extension, extension);
+			infoAtCluster[k].attributes = 0;
+			infoAtCluster[k].reserved = 0;
+			infoAtCluster[k].creationTime = 0;
+			infoAtCluster[k].creationDate = 0;
+			infoAtCluster[k].lastAccessDate = 0;
+			infoAtCluster[k].ignoreInFat12 = 0;
+			infoAtCluster[k].lastWriteTime = 0;
+			infoAtCluster[k].lastWriteDate = 0;
+		        infoAtCluster[k].firstLogicalCluster = j;
+		        infoAtCluster[k].fileSize = 0;		
+			infoAtCluster[++k].filename[0] == 0x00;
+		        break;
+		}
+		else
+		{
+			strcpy(infoAtCluster[k].filename, filename);
+		        strcpy(infoAtCluster[k].extension, extension);
+			infoAtCluster[k].attributes = 0;
+			infoAtCluster[k].reserved = 0;
+			infoAtCluster[k].creationTime = 0;
+			infoAtCluster[k].creationDate = 0;
+			infoAtCluster[k].lastAccessDate = 0;
+			infoAtCluster[k].ignoreInFat12 = 0;
+			infoAtCluster[k].lastWriteTime = 0;
+			infoAtCluster[k].lastWriteDate = 0;
+		        infoAtCluster[k].firstLogicalCluster = j;
+		        infoAtCluster[k].fileSize = 0;	
+		break;
+		}
             }
         }
         
@@ -187,5 +210,5 @@ int main(int argc, char **argv)
     }
 
 	//free(data);
-    return 0;*/}
+    return 0;
 }

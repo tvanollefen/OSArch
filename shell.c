@@ -126,7 +126,7 @@ int main(void)
       int buflength = 0;
 
       //read in the line
-      getline(&line, &MAX_INPUT_LENGTH, stdin);
+      		getline(&line, &MAX_INPUT_LENGTH, stdin);
       line = strtok(line, "\n");
 
       //tokenize the line and split into arguments
