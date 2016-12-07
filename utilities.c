@@ -1,13 +1,11 @@
-//TODO: ACCOUNT FOR FILES WITHOUT EXTENSIONS LIKE "TEST1."
-
 /*
-Authors: Paul Turchinetz and Tyler Van Ollefen
-Class: CSI-385-01
-Assignment: FAT
-Due Date: 2 November 2016, 11:59PM
-Description: This is utilities.c. It takes everything from fatSupport and adds our own utility functions.
-Certification of Authenticity:
-I certify that this assignment is entirely our own work unless cited otherwise.
+  Authors: Paul Turchinetz and Tyler Van Ollefen
+  Class: CSI-385-01
+  Assignment: FAT
+  Due Date: 6 December 2016, 11:59PM
+  Description: This is utilities.c. It takes everything from fatSupport and adds our own utility functions.
+  Certification of Authenticity:
+  I certify that this assignment is entirely our own work unless cited otherwise.
 */
 
 #include "utilities.h"
@@ -16,25 +14,25 @@ int BYTES_PER_SECTOR = 512;
 
 char* readFAT12Table()
 {
-   int i;
-   char* buffer = (char*)malloc(FAT_TABLE_SIZE);
+  int i;
+  char* buffer = (char*)malloc(FAT_TABLE_SIZE);
 
-   for (i = 0; i < NUM_FAT_SECTORS; i++)
-   {
+  for (i = 0; i < NUM_FAT_SECTORS; i++)
+    {
       read_sector(i + 1, &buffer[i * BYTES_PER_SECTOR]);
-   }
+    }
 
-   return buffer;
+  return buffer;
 }
 
 int writeFAT12Table(char* buffer)
 {
-   int i;
-   for (i = 0; i < NUM_FAT_SECTORS; i++)
-   {
+  int i;
+  for (i = 0; i < NUM_FAT_SECTORS; i++)
+    {
       write_sector(i + 1, &buffer[i * BYTES_PER_SECTOR]);
-   }
-   return 0;
+    }
+  return 0;
 }
 
 
@@ -44,285 +42,285 @@ int writeFAT12Table(char* buffer)
 //oh boy what a mess
 int search(short FLC, const char* target, int directoryOrFile, short* FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster)
 {
-	//printf ("directoryOrFile at the beginning is %d\n", directoryOrFile);
-	int i = 0;
+  //printf ("directoryOrFile at the beginning is %d\n", directoryOrFile);
+  int i = 0;
 	
-	char* data = malloc(BYTES_PER_SECTOR);
+  char* data = malloc(BYTES_PER_SECTOR);
 	
-	int realCluster;
+  int realCluster;
 
-	char* temp = calloc(strlen(target)+1, sizeof(char));
-	strcpy(temp, target);
+  char* temp = calloc(strlen(target)+1, sizeof(char));
+  strcpy(temp, target);
 
-	char *token;
+  char *token;
 
-	int j;
-	int slashCount = 0;
+  int j;
+  int slashCount = 0;
 	
-	//check to see how many slashes in the token
+  //check to see how many slashes in the token
 
-	for (j = 0; j < strlen(target)+1; j++)
+  for (j = 0; j < strlen(target)+1; j++)
+    {
+      if (temp[j] == '/')
 	{
-		if (temp[j] == '/')
-		{
-			slashCount++;
-		}
+	  slashCount++;
 	}
+    }
 
 	
 	
-	//if there's only one slash and it's at the beginning and then it finds a dot, that means we're looking for a file in the root directory
-	//so slash count should be 0
-	if (slashCount == 1 && target[0] == '/')
+  //if there's only one slash and it's at the beginning and then it finds a dot, that means we're looking for a file in the root directory
+  //so slash count should be 0
+  if (slashCount == 1 && target[0] == '/')
+    {
+      for (j = 0; j < strlen(target)+1; j++)
 	{
-		for (j = 0; j < strlen(target)+1; j++)
-		{
-			if (temp[j] == '.')
-			{
+	  if (temp[j] == '.')
+	    {
 
-				slashCount = 0;
-				break;
-			}
-		}
+	      slashCount = 0;
+	      break;
+	    }
 	}
+    }
 
-	/*if (target[strlen(target) - 1] == '.')
-	{
+  /*if (target[strlen(target) - 1] == '.')
+    {
 		
-	}*/
+    }*/
 
-	//lol this just works don't mind it
-	if (slashCount > 1 && target[0] == '/')
-		slashCount--;
+  //lol this just works don't mind it
+  if (slashCount > 1 && target[0] == '/')
+    slashCount--;
 
 
-      	token = strtok(temp, "/");
+  token = strtok(temp, "/");
 
-	while (token != NULL)
+  while (token != NULL)
+    {
+      if(FLC == 0)
 	{
-		if(FLC == 0)
-   		{
-      			realCluster = 19;
-   		}
-   		else
-   		{
-      			realCluster = 31 + FLC;
-   		}
+	  realCluster = 19;
+	}
+      else
+	{
+	  realCluster = 31 + FLC;
+	}
 		
-		read_sector(realCluster, data);
-		infoAtCluster[0] = (DirectoryOrFile*) data;
+      read_sector(realCluster, data);
+      infoAtCluster[0] = (DirectoryOrFile*) data;
 
-		i = 0;
-		while (i < 16)
-		{
-			char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-			//dont h8 but this works
-			if (directoryOrFile == 1)
-			{
-				//if we know it's a file
-				if (slashCount <= 0)
-					strtok(infoAtCluster[0][i].filename, " ");
+      i = 0;
+      while (i < 16)
+	{
+	  char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
+	  //dont h8 but this works
+	  if (directoryOrFile == 1)
+	    {
+	      //if we know it's a file
+	      if (slashCount <= 0)
+		strtok(infoAtCluster[0][i].filename, " ");
 
-				//else only this
-				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
-				strcat(fileAndExtension, ".");
+	      //else only this
+	      strcpy(fileAndExtension, infoAtCluster[0][i].filename);
+	      strcat(fileAndExtension, ".");
 
 							
-				strcat(fileAndExtension, infoAtCluster[0][i].extension);
+	      strcat(fileAndExtension, infoAtCluster[0][i].extension);
 
-				//printf("We have %s\n", fileAndExtension);
-				//printf("We're looking for %s\n", token);
-			}
-			else
-			{
-				strcpy(fileAndExtension, infoAtCluster[0][i].filename);
-			}
+	      //printf("We have %s\n", fileAndExtension);
+	      //printf("We're looking for %s\n", token);
+	    }
+	  else
+	    {
+	      strcpy(fileAndExtension, infoAtCluster[0][i].filename);
+	    }
 			
-			if (stringCompareTwoElectricBoogaloo(fileAndExtension, token) == 0)
-			{
-				break;
-			}
-			else
-			{
-				i++;
-			}	
-			free(fileAndExtension);
-		}
-		if (i < 16)
-		{
-			if (validate(directoryOrFile, infoAtCluster[0][i].extension) == 1)
-			{
-
-				//int poop = validate(directoryOrFile, infoAtCluster[0][i].extension);
-				//printf ("Poop is %d\ndirectoryOrFile is %d\n", poop, directoryOrFile);
-				if (directoryOrFile == 1)
-				{
-					FLC = infoAtCluster[0][i].firstLogicalCluster;
-					
-					return i; 
-				}
-				else
-				{
-					FLC = infoAtCluster[0][i].firstLogicalCluster;
-
-				}
-			}
-			else
-			{
-				if (directoryOrFile == 0)
-					printf("You can't do that with a file, friend.\n");
-				else if (directoryOrFile == 1)
-					{
-						FLC = infoAtCluster[0][i].firstLogicalCluster;
-					}
-				else
-					printf("Bro, how did you even manage this? LOL\n");
-			}
-		}
-		else
-		{
-			if (directoryOrFile == 0)
-				printf("Directory not found.\n");
-			else if (directoryOrFile == 1)
-				printf("File not found.\n");
-			else
-				printf("Bro, how did you even manage this? LMAO\n");
-			return -2;
-		}
-		slashCount--;
-		token = strtok(NULL, "/");
+	  if (stringCompareTwoElectricBoogaloo(fileAndExtension, token) == 0)
+	    {
+	      break;
+	    }
+	  else
+	    {
+	      i++;
+	    }	
+	  free(fileAndExtension);
 	}
+      if (i < 16)
+	{
+	  if (validate(directoryOrFile, infoAtCluster[0][i].extension) == 1)
+	    {
+
+	      //int poop = validate(directoryOrFile, infoAtCluster[0][i].extension);
+	      //printf ("Poop is %d\ndirectoryOrFile is %d\n", poop, directoryOrFile);
+	      if (directoryOrFile == 1)
+		{
+		  FLC = infoAtCluster[0][i].firstLogicalCluster;
+					
+		  return i; 
+		}
+	      else
+		{
+		  FLC = infoAtCluster[0][i].firstLogicalCluster;
+
+		}
+	    }
+	  else
+	    {
+	      if (directoryOrFile == 0)
+		printf("You can't do that with a file, friend.\n");
+	      else if (directoryOrFile == 1)
+		{
+		  FLC = infoAtCluster[0][i].firstLogicalCluster;
+		}
+	      else
+		printf("Bro, how did you even manage this? LOL\n");
+	    }
+	}
+      else
+	{
+	  if (directoryOrFile == 0)
+	    printf("Directory not found.\n");
+	  else if (directoryOrFile == 1)
+	    printf("File not found.\n");
+	  else
+	    printf("Bro, how did you even manage this? LMAO\n");
+	  return -2;
+	}
+      slashCount--;
+      token = strtok(NULL, "/");
+    }
 	
-	*FLCTwoElectricBoogaloo = FLC;
-	free(data);
-	free(temp);	
-	return FLC;
+  *FLCTwoElectricBoogaloo = FLC;
+  free(data);
+  free(temp);	
+  return FLC;
 }
 
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2)
 {	
-	int i;
-	for(i = 0; i < 12; i++)
-	{
+  int i;
+  for(i = 0; i < 12; i++)
+    {
 		
-		if (str1[i] == ' ' && str2[i] == '\0')
-		{
-			//it didnt fail before it ended
-			return 0;
-		}
-		else if (str1[i] == ' ' || str2[i] == '\0')
-		{
-			//theyre not the same length
-			return 1;
-		}
-		if (str1[i] != str2[i])
-		{
-			//its not equal
-			return 1;
-		}
+      if (str1[i] == ' ' && str2[i] == '\0')
+	{
+	  //it didnt fail before it ended
+	  return 0;
 	}
+      else if (str1[i] == ' ' || str2[i] == '\0')
+	{
+	  //theyre not the same length
+	  return 1;
+	}
+      if (str1[i] != str2[i])
+	{
+	  //its not equal
+	  return 1;
+	}
+    }
 
-	return 0;
+  return 0;
 }
 
 int validate(int directoryOrFile, char *extension)
 {
-	if (directoryOrFile == 0)
-	{
-		//if extension[0] is a space that means it's a directory
-		//return 1 if it's a directory if we're looking for a directory
-		//return 0 if it's a file if we're looking for a directory
-		return (extension[0] == ' ');
-	}
-	else if (directoryOrFile == 1)
-	{
-		//if extension[0] is not a space that means it's a file
-		//return 1 if it's a file if we're looking for a file
-		//return 0 if it's a directory if we're looking for a file
-		return (extension[0] != ' ');
-	}
-	else
-	{
-		printf("This should never be seen so I dunno how you got here.\n");
-		return 1;
-	}
+  if (directoryOrFile == 0)
+    {
+      //if extension[0] is a space that means it's a directory
+      //return 1 if it's a directory if we're looking for a directory
+      //return 0 if it's a file if we're looking for a directory
+      return (extension[0] == ' ');
+    }
+  else if (directoryOrFile == 1)
+    {
+      //if extension[0] is not a space that means it's a file
+      //return 1 if it's a file if we're looking for a file
+      //return 0 if it's a directory if we're looking for a file
+      return (extension[0] != ' ');
+    }
+  else
+    {
+      printf("This should never be seen so I dunno how you got here.\n");
+      return 1;
+    }
 }
 
 void readBootSector(DataAttribs* data)
 {
-   unsigned char* buffer;
-   unsigned int mostSignificantBits;
-   unsigned int leastSignificantBits;
+  unsigned char* buffer;
+  unsigned int mostSignificantBits;
+  unsigned int leastSignificantBits;
 
-   // Set it to this only to read the boot sector
-   BYTES_PER_SECTOR = BYTES_TO_READ_IN_BOOT_SECTOR;
+  // Set it to this only to read the boot sector
+  BYTES_PER_SECTOR = BYTES_TO_READ_IN_BOOT_SECTOR;
 
-   // Then reset it per the value in the boot sector
+  // Then reset it per the value in the boot sector
 
-   buffer = (unsigned char*) malloc(BYTES_PER_SECTOR * sizeof(unsigned char));
+  buffer = (unsigned char*) malloc(BYTES_PER_SECTOR * sizeof(unsigned char));
 
-   if (read_sector(0, buffer) == -1)
-      printf("Something has gone wrong -- could not read the boot sector\n");
+  if (read_sector(0, buffer) == -1)
+    printf("Something has gone wrong -- could not read the boot sector\n");
 
-   // 12 (not 11) because little endian
-   mostSignificantBits  = ( ( (int) buffer[12] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[11] )        & 0x000000ff;
+  // 12 (not 11) because little endian
+  mostSignificantBits  = ( ( (int) buffer[12] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[11] )        & 0x000000ff;
 
-   data->mBytesPerSector = mostSignificantBits | leastSignificantBits;
-   data->mSectorsPerCluster = buffer[13];
+  data->mBytesPerSector = mostSignificantBits | leastSignificantBits;
+  data->mSectorsPerCluster = buffer[13];
    
-   BYTES_PER_SECTOR = data->mBytesPerSector;
+  BYTES_PER_SECTOR = data->mBytesPerSector;
 
-   mostSignificantBits  = ( ( (int) buffer[15] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[14] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[15] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[14] )        & 0x000000ff;
 
-   data->mNumReservedSectors = mostSignificantBits | leastSignificantBits;
-   data->mNumFATs = buffer[16];
+  data->mNumReservedSectors = mostSignificantBits | leastSignificantBits;
+  data->mNumFATs = buffer[16];
 
-   mostSignificantBits  = ( ( (int) buffer[18] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[17] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[18] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[17] )        & 0x000000ff;
 
-   data->mNumRootEntries = mostSignificantBits | leastSignificantBits;
+  data->mNumRootEntries = mostSignificantBits | leastSignificantBits;
 
-   mostSignificantBits  = ( ( (int) buffer[20] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[19] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[20] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[19] )        & 0x000000ff;
 
-   data->mTotalSectorCount = mostSignificantBits | leastSignificantBits;
+  data->mTotalSectorCount = mostSignificantBits | leastSignificantBits;
 
-   mostSignificantBits  = ( ( (int) buffer[23] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[22] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[23] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[22] )        & 0x000000ff;
 
-   data->mSectorsPerFAT = mostSignificantBits | leastSignificantBits;
+  data->mSectorsPerFAT = mostSignificantBits | leastSignificantBits;
 
-   mostSignificantBits  = ( ( (int) buffer[25] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[24] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[25] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[24] )        & 0x000000ff;
 
-   data->mSectorsPerTrack = mostSignificantBits | leastSignificantBits;
+  data->mSectorsPerTrack = mostSignificantBits | leastSignificantBits;
 
-   mostSignificantBits  = ( ( (int) buffer[27] ) << 8 ) & 0x0000ff00;
-   leastSignificantBits =   ( (int) buffer[26] )        & 0x000000ff;
+  mostSignificantBits  = ( ( (int) buffer[27] ) << 8 ) & 0x0000ff00;
+  leastSignificantBits =   ( (int) buffer[26] )        & 0x000000ff;
 
-   data->mNumHeads = mostSignificantBits | leastSignificantBits;
+  data->mNumHeads = mostSignificantBits | leastSignificantBits;
 
-   data->mBootSignature = buffer[38];
+  data->mBootSignature = buffer[38];
 
-   //I didn't understand how to do little endian with more than two bits, thanks Alex Apmann   
-   unsigned int swap;
-   swap =   ( ( (int) buffer[42] ) << 24 ) & 0xff000000 |
-      ( ( (int) buffer[41] ) << 16 )       & 0x00ff0000 | 
-      ( ( (int) buffer[40] ) << 8  )       & 0x0000ff00 |
-      ( (int) buffer[39] )                 & 0x000000ff;
+  //I didn't understand how to do little endian with more than two bits, thanks Alex Apmann   
+  unsigned int swap;
+  swap =   ( ( (int) buffer[42] ) << 24 ) & 0xff000000 |
+    ( ( (int) buffer[41] ) << 16 )       & 0x00ff0000 | 
+    ( ( (int) buffer[40] ) << 8  )       & 0x0000ff00 |
+    ( (int) buffer[39] )                 & 0x000000ff;
 
-   data->mVolumeID = swap;
+  data->mVolumeID = swap;
 
 
-   unsigned char volumeLabel[] = {buffer[43], buffer[44], buffer[45], buffer[46], buffer[47], buffer[48], buffer[49], buffer[50], buffer[51], buffer[52], buffer[53], '\0'};
+  unsigned char volumeLabel[] = {buffer[43], buffer[44], buffer[45], buffer[46], buffer[47], buffer[48], buffer[49], buffer[50], buffer[51], buffer[52], buffer[53], '\0'};
 
-   strncpy(data->mVolumeLabel, volumeLabel, LABEL_LENGTH); //why does this show FAT12??? LABEL_LENGTH - 1 doesn't show FAT12
+  strncpy(data->mVolumeLabel, volumeLabel, LABEL_LENGTH); //why does this show FAT12??? LABEL_LENGTH - 1 doesn't show FAT12
 
-   unsigned char fileSystemType[] = {buffer[54], buffer[55], buffer[56], buffer[57], buffer[58], buffer[59], buffer[60], buffer[61], '\0'};
+  unsigned char fileSystemType[] = {buffer[54], buffer[55], buffer[56], buffer[57], buffer[58], buffer[59], buffer[60], buffer[61], '\0'};
 
-   strncpy(data->mFileSystemType, fileSystemType, FILESYSTEM_LENGTH);
+  strncpy(data->mFileSystemType, fileSystemType, FILESYSTEM_LENGTH);
 }
 
 /******************************************************************************
@@ -361,24 +359,24 @@ void readBootSector(DataAttribs* data)
 
 int read_sector(int sector_number, unsigned char* buffer)
 {
-   int bytes_read;
+  int bytes_read;
 
-   if (fseek(FILE_SYSTEM_ID,
-             (long) sector_number * (long) BYTES_PER_SECTOR, SEEK_SET) != 0)
-   {
-	   printf("Error accessing sector %d\n", sector_number);
+  if (fseek(FILE_SYSTEM_ID,
+	    (long) sector_number * (long) BYTES_PER_SECTOR, SEEK_SET) != 0)
+    {
+      printf("Error accessing sector %d\n", sector_number);
       return -1;
-   }
+    }
 
-   bytes_read = fread(buffer, sizeof(char), BYTES_PER_SECTOR, FILE_SYSTEM_ID);
+  bytes_read = fread(buffer, sizeof(char), BYTES_PER_SECTOR, FILE_SYSTEM_ID);
 
-   if (bytes_read != BYTES_PER_SECTOR)
-   {
+  if (bytes_read != BYTES_PER_SECTOR)
+    {
       printf("Error reading sector %d\n", sector_number);
       return -1;
-   }
+    }
 
-   return bytes_read;
+  return bytes_read;
 }
 
 
@@ -396,25 +394,25 @@ int read_sector(int sector_number, unsigned char* buffer)
 
 int write_sector(int sector_number, unsigned char* buffer) 
 {
-   int bytes_written;
+  int bytes_written;
    
-   if (fseek(FILE_SYSTEM_ID,
-       (long) sector_number * (long) BYTES_PER_SECTOR, SEEK_SET) != 0) 
-   {
+  if (fseek(FILE_SYSTEM_ID,
+	    (long) sector_number * (long) BYTES_PER_SECTOR, SEEK_SET) != 0) 
+    {
       printf("Error accessing sector %d\n", sector_number);
       return -1;
-   }
+    }
 
-   bytes_written = fwrite(buffer,
-                          sizeof(char), BYTES_PER_SECTOR, FILE_SYSTEM_ID);
+  bytes_written = fwrite(buffer,
+			 sizeof(char), BYTES_PER_SECTOR, FILE_SYSTEM_ID);
 
-   if (bytes_written != BYTES_PER_SECTOR) 
-   {
+  if (bytes_written != BYTES_PER_SECTOR) 
+    {
       printf("Error reading sector %d\n", sector_number);
       return -1;
-   }
+    }
 
-   return bytes_written;
+  return bytes_written;
 }
 
 
@@ -432,28 +430,28 @@ int write_sector(int sector_number, unsigned char* buffer)
 
 int get_fat_entry(int fat_entry_number, unsigned char* fat) 
 {
-   int offset;
-   int uv, wx, yz;
+  int offset;
+  int uv, wx, yz;
 
-   offset = 3 * fat_entry_number / 2;
+  offset = 3 * fat_entry_number / 2;
 
-   // Two FAT12 entries are stored into three bytes;
-   // if these bytes are uv,wx,yz then the two FAT12 entries are xuv and yzw
+  // Two FAT12 entries are stored into three bytes;
+  // if these bytes are uv,wx,yz then the two FAT12 entries are xuv and yzw
 
-   // odd fat entry number, return yzw
-   if (fat_entry_number & 0x0001) 
-   {
+  // odd fat entry number, return yzw
+  if (fat_entry_number & 0x0001) 
+    {
       wx = (int) fat[offset];
       yz = (int) fat[offset + 1];
       return ( (yz << 4)  |  ( (wx & 0x00f0) >> 4));
-   } 
-   // even fat entry number, return xuv
-   else 
-   {
+    } 
+  // even fat entry number, return xuv
+  else 
+    {
       uv = (int) fat[offset];
       wx = (int) fat[offset + 1];
       return ( ((wx & 0x000f) << 8)  |  uv );
-   }
+    }
 }
 
 
@@ -469,35 +467,35 @@ int get_fat_entry(int fat_entry_number, unsigned char* fat)
 
 void set_fat_entry(int fat_entry_number, int value, unsigned char* fat) 
 {
-   int offset;
-   int uv, wx, yz, a, b, c;
+  int offset;
+  int uv, wx, yz, a, b, c;
 
-   offset = 3 * fat_entry_number / 2;
+  offset = 3 * fat_entry_number / 2;
 
-   // Two FAT12 entries are stored into three bytes;
-   // if these bytes are uv,wx,yz then the two FAT12 entries are xuv and yzw
-   // Let 0a,bc denote the fat_entry_number, written as two bytes (high and
-   // low, respectively)
+  // Two FAT12 entries are stored into three bytes;
+  // if these bytes are uv,wx,yz then the two FAT12 entries are xuv and yzw
+  // Let 0a,bc denote the fat_entry_number, written as two bytes (high and
+  // low, respectively)
 
-   a = value & 0x0f00;
-   b = value & 0x00f0;
-   c = value & 0x000f;
+  a = value & 0x0f00;
+  b = value & 0x00f0;
+  c = value & 0x000f;
 
-   // odd fat entry number, change yzw to abc, i.e.,
-   if (fat_entry_number & 0x0001) 
-   {
+  // odd fat entry number, change yzw to abc, i.e.,
+  if (fat_entry_number & 0x0001) 
+    {
       // wx = cx;
       fat[offset]     = (unsigned char) ((c << 4)  |  (fat[offset] & 0x000f));
       // yz = ab;
       fat[offset + 1] = (unsigned char) ((a >> 4)  |  (b >> 4));
-   }
-   // even fat entry number, change xuv to abc, i.e.,
-   else
-   {
+    }
+  // even fat entry number, change xuv to abc, i.e.,
+  else
+    {
       // uv = bc;
       fat[offset]     = (unsigned char) (b | c);
       // wx = wa;
       fat[offset + 1] = (unsigned char) ((fat[offset + 1]  & 
                                           0x00f0)  |  (a >> 8));
-   }
+    }
 }

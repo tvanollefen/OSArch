@@ -1,11 +1,11 @@
 /*
-Authors: Paul Turchinetz and Tyler Van Ollefen
-Class: CSI-385-01
-Assignment: FAT
-Due Date: 2 November 2016, 11:59PM
-Description: This is the pfe command - print fat entries.
-Certification of Authenticity:
-I certify that this assignment is entirely our own work unless cited otherwise.
+  Authors: Paul Turchinetz and Tyler Van Ollefen
+  Class: CSI-385-01
+  Assignment: FAT
+  Due Date: 6 December 2016, 11:59PM
+  Description: This is the pfe command - print fat entries.
+  Certification of Authenticity:
+  I certify that this assignment is entirely our own work unless cited otherwise.
 */
 
 #include "utilities.h"
@@ -23,83 +23,83 @@ FILE* FILE_SYSTEM_ID;
 
 void print(char* fatTable, int x, int y)
 {
-   int i;
-   for (i = x; i <= y; i++)
-   {
-       printf("Entry %d: %x\n", i, get_fat_entry(i, fatTable));
-   }
+  int i;
+  for (i = x; i <= y; i++)
+    {
+      printf("Entry %d: %x\n", i, get_fat_entry(i, fatTable));
+    }
 }
 
 /*char* readFAT12Table()
-{
-   int i;
-   char* fatTable = malloc(FAT_TABLE_SIZE);
+  {
+  int i;
+  char* fatTable = malloc(FAT_TABLE_SIZE);
 
-   for (i = 0; i < NUM_FAT_SECTORS; i++)
-   {
-      read_sector(i + 1, &fatTable[i * BYTES_PER_SECTOR]);
-   }
+  for (i = 0; i < NUM_FAT_SECTORS; i++)
+  {
+  read_sector(i + 1, &fatTable[i * BYTES_PER_SECTOR]);
+  }
 
-   return fatTable;
-}*/
+  return fatTable;
+  }*/
 
 int checkRange(int x, int y)
 {
-   //according to spec
-   if (x > y || x < 2)
-   {
+  //according to spec
+  if (x > y || x < 2)
+    {
       return 1;
-   }
-   else
-   {
+    }
+  else
+    {
       return 0;
-   }
+    }
 }
 
 void usage()
 {
-   printf("Usage: pfe int int\nThe first integer must at least 2 and not be greater than the second integer.\nPlease enter only two arguments.\nPrints out all FAT entries.\n");
+  printf("Usage: pfe int int\nThe first integer must at least 2 and not be greater than the second integer.\nPlease enter only two arguments.\nPrints out all FAT entries.\n");
 }
 
 int main (int argc, char* argv[])
 {
-   int x;
-   int y;
-   int goodRange;
+  int x;
+  int y;
+  int goodRange;
       
-   if (argc != 3)
-   {
+  if (argc != 3)
+    {
       usage();
       return 1;
-   }
+    }
    
-   x = atoi(argv[1]);
-   y = atoi(argv[2]);
-   goodRange = checkRange(x, y);
+  x = atoi(argv[1]);
+  y = atoi(argv[2]);
+  goodRange = checkRange(x, y);
 
-   if (goodRange == 1)
-   {
+  if (goodRange == 1)
+    {
       usage();
       return 1;
-   }
+    }
 
-   //https://beej.us/guide/bgipc/output/html/multipage/shm.html
-   //Alex Apmann is God
-   int shmId = shmget((key_t) 8888888, sizeof(char), 0666 | IPC_CREAT);
+  //https://beej.us/guide/bgipc/output/html/multipage/shm.html
+  //Alex Apmann is God
+  int shmId = shmget((key_t) 8888888, sizeof(char), 0666 | IPC_CREAT);
  
-   SharedMemory *sharedMemory = (SharedMemory *)shmat(shmId, (void *) 0, 0);
+  SharedMemory *sharedMemory = (SharedMemory *)shmat(shmId, (void *) 0, 0);
  
-   FILE_SYSTEM_ID = fopen(sharedMemory->floppyImgName, "r+");
+  FILE_SYSTEM_ID = fopen(sharedMemory->floppyImgName, "r+");
 
-   if (FILE_SYSTEM_ID == NULL)
-   {
+  if (FILE_SYSTEM_ID == NULL)
+    {
       printf("Could not open the floppy drive or image.\n");
       exit(1);
-   }
+    }
 
-   char* fatTable = readFAT12Table();
-   print(fatTable, x, y);
+  char* fatTable = readFAT12Table();
+  print(fatTable, x, y);
 
    
-   return 0;
+  return 0;
 }

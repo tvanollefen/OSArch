@@ -1,8 +1,9 @@
-shell: cat.c cd.c df.c ls.c pbs.c pfe.c pwd.c rm.c rmdir.c shell.c touch.c utilities.c
+shell: cat.c cd.c df.c ls.c mkdir.c pbs.c pfe.c pwd.c rm.c rmdir.c shell.c touch.c utilities.c
 	gcc cat.c utilities.c -o cat
 	gcc cd.c utilities.c -o cd
 	gcc df.c utilities.c -o df
 	gcc ls.c utilities.c -o ls
+	gcc mkdir.c utilities.c -o mkdir
 	gcc pbs.c utilities.c -o pbs
 	gcc pfe.c utilities.c -o pfe
 	gcc pwd.c -o pwd

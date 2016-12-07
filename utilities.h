@@ -1,11 +1,11 @@
 /*
-Authors: Paul Turchinetz and Tyler Van Ollefen
-Class: CSI-385-01
-Assignment: FAT
-Due Date: 17 November 2016, 11:59PM
-Description: This is utilities.h. It has utilities.
-Certification of Authenticity:
-I certify that this assignment is entirely our own work unless cited otherwise.
+  Authors: Paul Turchinetz and Tyler Van Ollefen
+  Class: CSI-385-01
+  Assignment: FAT
+  Due Date: 6 December 2016, 11:59PM
+  Description: This is utilities.h. It has utilities.
+  Certification of Authenticity:
+  I certify that this assignment is entirely our own work unless cited otherwise.
 */
 
 #ifndef __UTILITITIES__
@@ -49,37 +49,37 @@ extern int BYTES_PER_SECTOR;
 
 typedef struct DataAttribs
 {
-   int mBytesPerSector;
-   int mSectorsPerCluster;
-   int mNumFATs;
-   int mNumReservedSectors;
-   int mNumRootEntries;
-   int mTotalSectorCount;
-   int mSectorsPerFAT;
-   int mSectorsPerTrack;
-   int mNumHeads;
-   int mBootSignature;
-   int mVolumeID;
-   char mVolumeLabel[LABEL_LENGTH];
-   char mFileSystemType[FILESYSTEM_LENGTH];
+  int mBytesPerSector;
+  int mSectorsPerCluster;
+  int mNumFATs;
+  int mNumReservedSectors;
+  int mNumRootEntries;
+  int mTotalSectorCount;
+  int mSectorsPerFAT;
+  int mSectorsPerTrack;
+  int mNumHeads;
+  int mBootSignature;
+  int mVolumeID;
+  char mVolumeLabel[LABEL_LENGTH];
+  char mFileSystemType[FILESYSTEM_LENGTH];
 } DataAttribs;
 
 //DAVID JORDAN IS OUR HERO HE HELPED US UNDERSTAND
 #pragma pack(1)
 typedef struct DirectoryOrFile
 {
-	char filename[8];
-	char extension[3];
-	char attributes;
-	short reserved;
-	short creationTime;
-	short creationDate;
-	short lastAccessDate;
-	short ignoreInFat12;
-	short lastWriteTime;
-	short lastWriteDate;
-	short firstLogicalCluster;
-	int fileSize;
+  char filename[8];
+  char extension[3];
+  char attributes;
+  short reserved;
+  short creationTime;
+  short creationDate;
+  short lastAccessDate;
+  short ignoreInFat12;
+  short lastWriteTime;
+  short lastWriteDate;
+  short firstLogicalCluster;
+  int fileSize;
 } DirectoryOrFile;
 #pragma pack()
 

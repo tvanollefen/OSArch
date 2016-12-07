@@ -1,11 +1,11 @@
 /*
-Authors: Paul Turchinetz and Tyler Van Ollefen
-Class: CSI-385-01
-Assignment: FAT
-Due Date: 2 November 2016, 11:59PM
-Description: This is the cd command - change directory.
-Certification of Authenticity:
-I certify that this assignment is entirely our own work unless cited otherwise.
+  Authors: Paul Turchinetz and Tyler Van Ollefen
+  Class: CSI-385-01
+  Assignment: FAT
+  Due Date: 6 December 2016, 11:59PM
+  Description: This is the cd command - change directory.
+  Certification of Authenticity:
+  I certify that this assignment is entirely our own work unless cited otherwise.
 */
 
 #include <stdio.h>
@@ -47,35 +47,35 @@ int main(int argc, char **argv)
       //absolute path first
       if (argv[1][0] == '/')
 	{
-		if (search(0, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
-		{
-	 		strcpy(sharedMemory->curDir, argv[1]);
-		}
+	  if (search(0, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
+	    {
+	      strcpy(sharedMemory->curDir, argv[1]);
+	    }
 	}
       //if you're not in the home directory, add a slash before concatenating the strings
-	//also make sure we don't search from the beginning because 
-	else if (search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
+      //also make sure we don't search from the beginning because 
+      else if (search(sharedMemory->firstCluster, argv[1], 0, &sharedMemory->firstCluster, &unused) >= 0)
 	{
-		if (strcmp(sharedMemory->curDir, sharedMemory->homeDir))
+	  if (strcmp(sharedMemory->curDir, sharedMemory->homeDir))
+	    {
+	      if (strcmp(argv[1], ".."))
 		{
-			if (strcmp(argv[1], ".."))
-			{
 
-			}
-			strcat(sharedMemory->curDir, "/");
-	      		strcat(sharedMemory->curDir, argv[1]);
 		}
-	      //just add on the string to the home directory
-		else
-		{
-			strcat(sharedMemory->curDir, argv[1]);
-		}
+	      strcat(sharedMemory->curDir, "/");
+	      strcat(sharedMemory->curDir, argv[1]);
+	    }
+	  //just add on the string to the home directory
+	  else
+	    {
+	      strcat(sharedMemory->curDir, argv[1]);
+	    }
 	}
     }
   else if (argc > 2)
     {
       usage();
-	return 1;
+      return 1;
     }
   else
     {

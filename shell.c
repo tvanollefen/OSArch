@@ -1,12 +1,12 @@
 /*
-Authors: Paul Turchinetz and Tyler Van Ollefen
-Class: CSI-385-01
-Assignment: FAT
-Due Date: 2 November 2016, 11:59PM
-Description: This is the SHELL.
-Certification of Authenticity:
-I certify that this assignment is entirely our own work unless cited otherwise.
-Referenced: https://brennan.io/2015/01/16/write-a-shell-in-c/
+  Authors: Paul Turchinetz and Tyler Van Ollefen
+  Class: CSI-385-01
+  Assignment: FAT
+  Due Date: 2 November 2016, 11:59PM
+  Description: This is the SHELL.
+  Certification of Authenticity:
+  I certify that this assignment is entirely our own work unless cited otherwise.
+  Referenced: https://brennan.io/2015/01/16/write-a-shell-in-c/
 */
 
 #include <stdio.h>
@@ -36,7 +36,8 @@ char* builtin_name[] = {
   "rmdir",
   "rm",
   "df",
-  "touch"
+  "touch",
+  "mkdir"
 };
 
 int builtinCount()
@@ -100,18 +101,18 @@ int main(void)
 
   /*FILE_SYSTEM_ID = fopen(FLOPPY_IMAGE_NAME, "r+");
 
-   if (FILE_SYSTEM_ID == NULL)
-   {
-      printf("Could not open the floppy drive or image.\n");
-      exit(1);
-   }*/
+    if (FILE_SYSTEM_ID == NULL)
+    {
+    printf("Could not open the floppy drive or image.\n");
+    exit(1);
+    }*/
 
-   strcpy(sharedMemory->curDir, "/"); //set starting directory to '/'
-   strcpy(sharedMemory->homeDir, "/"); //set home directory to '/'
-   strcpy(sharedMemory->floppyImgName, FLOPPY_IMAGE_NAME); //set floppy image to whatever is up top (can change later)
-   sharedMemory->firstCluster = 0; //first logical cluster of FAT is 0
+  strcpy(sharedMemory->curDir, "/"); //set starting directory to '/'
+  strcpy(sharedMemory->homeDir, "/"); //set home directory to '/'
+  strcpy(sharedMemory->floppyImgName, FLOPPY_IMAGE_NAME); //set floppy image to whatever is up top (can change later)
+  sharedMemory->firstCluster = 0; //first logical cluster of FAT is 0
    
-   while (1)
+  while (1)
     {
       char *line = malloc(MAX_INPUT_LENGTH * sizeof(char));
       int i;
@@ -126,7 +127,7 @@ int main(void)
       int buflength = 0;
 
       //read in the line
-      		getline(&line, &MAX_INPUT_LENGTH, stdin);
+      getline(&line, &MAX_INPUT_LENGTH, stdin);
       line = strtok(line, "\n");
 
       //tokenize the line and split into arguments
@@ -159,7 +160,8 @@ int main(void)
 	      strcmp(argv[0], "rmdir") == 0 ||
 	      strcmp(argv[0], "rm")    == 0 ||
 	      strcmp(argv[0], "df")    == 0 ||
-	      strcmp(argv[0], "touch") == 0)
+	      strcmp(argv[0], "touch") == 0 ||
+	      strcmp(argv[0], "mkdir") == 0)
 	{
 	  forkAndExec(argc, argv);
 	}
@@ -172,8 +174,8 @@ int main(void)
       
     }
 
-    //deletes the shared memory, thanks alex apmann
-    shmctl(shmId, IPC_RMID, NULL);
+  //deletes the shared memory, thanks alex apmann
+  shmctl(shmId, IPC_RMID, NULL);
 
    
   return 0;
