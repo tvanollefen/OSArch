@@ -35,7 +35,8 @@ char* builtin_name[] = {
   "cat",
   "rmdir",
   "rm",
-  "df"
+  "df",
+  "touch"
 };
 
 int builtinCount()
@@ -157,7 +158,8 @@ int main(void)
 	      strcmp(argv[0], "cat")   == 0 ||
 	      strcmp(argv[0], "rmdir") == 0 ||
 	      strcmp(argv[0], "rm")    == 0 ||
-	      strcmp(argv[0], "df")    == 0)
+	      strcmp(argv[0], "df")    == 0 ||
+	      strcmp(argv[0], "touch") == 0)
 	{
 	  forkAndExec(argc, argv);
 	}

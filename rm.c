@@ -1,3 +1,14 @@
+/*
+Authors: Paul Turchinetz and Tyler Van Ollefen
+Class: CSI-385-01
+Assignment: FAT
+Due Date: 6 December 2016, 11:59PM
+Description: rm deletes a file
+Certification of Authenticity:
+I certify that this assignment is entirely our own work unless cited otherwise.
+*/
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

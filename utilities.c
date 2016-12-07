@@ -34,6 +34,7 @@ int writeFAT12Table(char* buffer)
    {
       write_sector(i + 1, &buffer[i * BYTES_PER_SECTOR]);
    }
+   return 0;
 }
 
 

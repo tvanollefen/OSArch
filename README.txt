@@ -1,5 +1,11 @@
 Tyler Van Ollefen and Paul Turchinetz
 
+The environment that this project was built in tested in is:
+Ubuntu 14.04
+gcc 4.8
+
+If you encounter any issues while running it, please try running it in the specified environment!
+
 To run our shell:
 Extract this tar.gz archive into a folder of your choice.
 Type "make"
