@@ -58,6 +58,10 @@ int main(int argc, char **argv)
 	{
 		if (strcmp(sharedMemory->curDir, sharedMemory->homeDir))
 		{
+			if (strcmp(argv[1], ".."))
+			{
+
+			}
 			strcat(sharedMemory->curDir, "/");
 	      		strcat(sharedMemory->curDir, argv[1]);
 		}

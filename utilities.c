@@ -247,6 +247,81 @@ int validate(int directoryOrFile, char *extension)
 	}
 }
 
+void readBootSector(DataAttribs* data)
+{
+   unsigned char* buffer;
+   unsigned int mostSignificantBits;
+   unsigned int leastSignificantBits;
+
+   // Set it to this only to read the boot sector
+   BYTES_PER_SECTOR = BYTES_TO_READ_IN_BOOT_SECTOR;
+
+   // Then reset it per the value in the boot sector
+
+   buffer = (unsigned char*) malloc(BYTES_PER_SECTOR * sizeof(unsigned char));
+
+   if (read_sector(0, buffer) == -1)
+      printf("Something has gone wrong -- could not read the boot sector\n");
+
+   // 12 (not 11) because little endian
+   mostSignificantBits  = ( ( (int) buffer[12] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[11] )        & 0x000000ff;
+
+   data->mBytesPerSector = mostSignificantBits | leastSignificantBits;
+   data->mSectorsPerCluster = buffer[13];
+
+   mostSignificantBits  = ( ( (int) buffer[15] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[14] )        & 0x000000ff;
+
+   data->mNumReservedSectors = mostSignificantBits | leastSignificantBits;
+   data->mNumFATs = buffer[16];
+
+   mostSignificantBits  = ( ( (int) buffer[18] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[17] )        & 0x000000ff;
+
+   data->mNumRootEntries = mostSignificantBits | leastSignificantBits;
+
+   mostSignificantBits  = ( ( (int) buffer[20] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[19] )        & 0x000000ff;
+
+   data->mTotalSectorCount = mostSignificantBits | leastSignificantBits;
+
+   mostSignificantBits  = ( ( (int) buffer[23] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[22] )        & 0x000000ff;
+
+   data->mSectorsPerFAT = mostSignificantBits | leastSignificantBits;
+
+   mostSignificantBits  = ( ( (int) buffer[25] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[24] )        & 0x000000ff;
+
+   data->mSectorsPerTrack = mostSignificantBits | leastSignificantBits;
+
+   mostSignificantBits  = ( ( (int) buffer[27] ) << 8 ) & 0x0000ff00;
+   leastSignificantBits =   ( (int) buffer[26] )        & 0x000000ff;
+
+   data->mNumHeads = mostSignificantBits | leastSignificantBits;
+
+   data->mBootSignature = buffer[38];
+
+   //I didn't understand how to do little endian with more than two bits, thanks Alex Apmann   
+   unsigned int swap;
+   swap =   ( ( (int) buffer[42] ) << 24 ) & 0xff000000 |
+      ( ( (int) buffer[41] ) << 16 )       & 0x00ff0000 | 
+      ( ( (int) buffer[40] ) << 8  )       & 0x0000ff00 |
+      ( (int) buffer[39] )                 & 0x000000ff;
+
+   data->mVolumeID = swap;
+
+
+   unsigned char volumeLabel[] = {buffer[43], buffer[44], buffer[45], buffer[46], buffer[47], buffer[48], buffer[49], buffer[50], buffer[51], buffer[52], buffer[53], '\0'};
+
+   strncpy(data->mVolumeLabel, volumeLabel, LABEL_LENGTH); //why does this show FAT12??? LABEL_LENGTH - 1 doesn't show FAT12
+
+   unsigned char fileSystemType[] = {buffer[54], buffer[55], buffer[56], buffer[57], buffer[58], buffer[59], buffer[60], buffer[61], '\0'};
+
+   strncpy(data->mFileSystemType, fileSystemType, FILESYSTEM_LENGTH);
+}
+
 /******************************************************************************
  * Supporting functions for the FAT project:
  *

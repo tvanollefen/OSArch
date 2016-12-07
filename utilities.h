@@ -23,6 +23,8 @@ I certify that this assignment is entirely our own work unless cited otherwise.
 #define FAT_TABLE_SIZE BYTES_PER_SECTOR * NUM_FAT_SECTORS
 //int BYTES_PER_SECTOR = 512;
 
+#define BYTES_TO_READ_IN_BOOT_SECTOR 61
+
 //All this is from the project spec
 #define FILE_NAME_LENGTH 8
 #define FILE_EXTENSION_LENGTH 3
@@ -83,6 +85,8 @@ typedef struct DirectoryOrFile
 
 char* readFAT12Table();
 int writeFAT12Table(char* buffer);
+
+void readBootSector(DataAttribs* data);
 
 int search(short FLC, const char* target, int directoryOrFile, short *FLCTwoElectricBoogaloo, DirectoryOrFile **infoAtCluster);
 int stringCompareTwoElectricBoogaloo(char *str1, char *str2);
