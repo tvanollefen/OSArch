@@ -29,7 +29,8 @@ int main(int argc, char **argv)
    }
 
    int i;
-   int FLC = 0;
+   short FLC = 0;
+   short oldFLC = 0;
    int deletable = 0;
    int realCluster;
    short oldCluster = sharedMemory->firstCluster;
@@ -92,6 +93,7 @@ int main(int argc, char **argv)
 		}
 		if (deletable == 0)
 		{
+			//q is for the directory above
 			int q;
 			
 			q = search(sharedMemory->firstCluster, "..", 0, &sharedMemory->firstCluster, &infoAtCluster);
@@ -147,6 +149,20 @@ int main(int argc, char **argv)
 			
 			write_sector(realCluster, deletionBuffer);
 			write_sector(newCluster, deleteFromAboveBuffer);
+
+			//FLC will never be 0 because the file can't actually be the root directory
+			FLC = infoAtOldCluster[q].firstLogicalCluster;
+			char* fatEntryBuffer = readFAT12Table();
+
+			while (FLC != 0 && FLC != 4095) //FFF -> decimal = 4095
+			{
+		 	        oldFLC = get_fat_entry(FLC,fatEntryBuffer);
+		 	        set_fat_entry(FLC, 0, fatEntryBuffer);
+				FLC = oldFLC;
+			}
+		
+			writeFAT12Table(fatEntryBuffer);
+
 			printf("Directory successfully deleted!\n");
 		}
 		else
