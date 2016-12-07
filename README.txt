@@ -17,7 +17,7 @@ pbs prints an extra FAT12 pls help
 
 cat only prints out first sector of big files
 
-rmdir doesn't update fat entries
+rmdir doesn't update fat entries yet
 
 files without extensions break everything
 

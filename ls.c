@@ -130,7 +130,7 @@ int main(int argc, char **argv)
 		strtok(infoAtCluster[i].filename, " ");
 		printf("Name              Type    File Size    FLC\n");
 		char* fileAndExtension = malloc(12); //8 for filename, 1 for ".", 3 for extension
-		strcpy(fileAndExtension, infoAtCluster[i].filename);
+		strcpy(fileAndExtension, infoAtCluster[i].filename);	
 		strcat(fileAndExtension, ".");
 		strcat(fileAndExtension, infoAtCluster[i].extension);
 		printf("%-15s   FILE   %10d  %5d\n",fileAndExtension, infoAtCluster[i].fileSize, infoAtCluster[i].firstLogicalCluster);

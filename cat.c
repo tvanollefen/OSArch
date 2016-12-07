@@ -46,21 +46,24 @@ if (argc != 2)
 	{
 		int numSecs = 0;
    		char* fatBuffer = readFAT12Table();
-   		int currentFlc = sharedMemory->firstCluster;
-   		while(/*currentFlc != 0 && */currentFlc != 4095)
+   		int currentFlc = infoAtCluster[i].firstLogicalCluster;
+		//because currentFlc won't ever be 0
+
+   		while(currentFlc != 0 && currentFlc != 4095)
    		{
      			 numSecs++;
-      			currentFlc = get_fat_entry(currentFlc,fatBuffer);
+      			currentFlc = get_fat_entry(currentFlc, fatBuffer);
   		}
-		FLC = infoAtCluster[i].firstLogicalCluster;
-		FLC += 31;
 		unsigned char *data = malloc(BYTES_PER_SECTOR * numSecs);
+
+   		currentFlc = infoAtCluster[i].firstLogicalCluster;
 
 		int i = 0;
   		 for(i = 0; i < numSecs; i++)
    		{
-      			read_sector(FLC, data +(BYTES_PER_SECTOR*i));
-      			currentFlc = get_fat_entry(currentFlc, fatBuffer);
+			realCluster = currentFlc + 31;
+      			read_sector(realCluster, data + (BYTES_PER_SECTOR * i));
+			currentFlc = get_fat_entry(currentFlc, fatBuffer);
    		}
 		printf("%s\n", data);
 	}
